@@ -1,11 +1,15 @@
 import { ActionPanel, Detail, List, Action } from "@raycast/api";
-import { withGists, nameForGist } from "./gists";
+import { Gist, GistFile, withGists, titleForGist } from "./gists";
+
+// We only show the first N characters of a file in the view, as
+// too much data tends to crash Raycast.
+const FILE_MAX_DISPLAY_LENGTH = 10_000;
 
 const GistFileList = (props: { gist: Gist }): JSX.Element => {
   const gist = props.gist;
 
   return (
-    <List>
+    <List navigationTitle={titleForGist(gist)}>
       {gist.files.map((file, fileIndex) => (
         <GistFileListItem key={file.name} gist={gist} file={file} fileIndex={fileIndex} />
       ))}
@@ -13,16 +17,27 @@ const GistFileList = (props: { gist: Gist }): JSX.Element => {
   );
 };
 
-const GistFileDetail = (props: { file: GistFile; gist: Gist }): JSX.Element => {
+const truncateText = (text: string, maxLength: number): [string, boolean] => {
+  if (text.length <= maxLength) {
+    return [text, false];
+  } else {
+    return [text.substring(0, maxLength), true];
+  }
+};
+
+const GistFileDetail = (props: { file: GistFile; gist: Gist; navigationTitle?: string | undefined }): JSX.Element => {
   const gist = props.gist;
   const file = props.file;
+  const navigationTitle = props.navigationTitle;
 
-  const markdown = `\`\`\`${file.language}\n${file.text}\n\`\`\``;
+  const [text, isTruncated] = truncateText(file.text, FILE_MAX_DISPLAY_LENGTH);
+
+  const markdown = `\`\`\`${file.language}\n${text}\n\`\`\`${isTruncated ? "\n\n *(truncated)*" : ""}`;
 
   return (
     <Detail
       markdown={markdown}
-      navigationTitle={file.name}
+      navigationTitle={typeof navigationTitle === "undefined" ? file.name : navigationTitle}
       actions={
         <ActionPanel>
           <Action.CopyToClipboard title="Copy Content to Clipboard" content={file.text} />
@@ -76,18 +91,21 @@ const GistListItem = (props: { gist: Gist; refreshGists: () => void }): JSX.Elem
 
   if (gist.files.length == 1) {
     const [file] = gist.files;
+    const title = titleForGist(gist);
 
     return (
       <List.Item
         id={gist.id}
         icon="list-icon.png"
-        title={nameForGist(gist)}
+        title={title}
         key={gist.id}
-        subtitle={gist.files.length > 1 ? `+${gist.files.length - 1} files` : undefined}
         accessories={[{ text: gist.isPublic ? "Public" : "Private" }]}
         actions={
           <ActionPanel>
-            <Action.Push title="View File" target={<GistFileDetail gist={gist} file={file} />} />
+            <Action.Push
+              title="View File"
+              target={<GistFileDetail gist={gist} file={file} navigationTitle={title} />}
+            />
             <Action.CopyToClipboard title="Copy Content to Clipboard" content={file.text} />
             <Action.CopyToClipboard
               title="Copy URL to Clipboard"
@@ -118,15 +136,13 @@ const GistListItem = (props: { gist: Gist; refreshGists: () => void }): JSX.Elem
       />
     );
   } else {
-    const file = gist.files[0];
-
     return (
       <List.Item
         id={gist.id}
         icon="list-icon.png"
-        title={file.name}
+        title={titleForGist(gist)}
         key={gist.id}
-        subtitle={`+${gist.files.length - 1} other ${gist.files.length > 2 ? "files" : "file"}`}
+        subtitle={`${gist.files.length} files`}
         accessories={[{ text: gist.isPublic ? "Public" : "Private" }]}
         actions={
           <ActionPanel>
