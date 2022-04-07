@@ -15,6 +15,12 @@
       "title": "View Recent Gists",
       "description": "Explore your most recent gists and copy the code or URL to the clipboard",
       "mode": "view"
+    },
+    {
+      "name": "create-gist",
+      "title": "Create Gist",
+      "description": "Create a gist using the contents of the clipboard",
+      "mode": "view"
     }
   ],
   "dependencies": {

@@ -25,7 +25,40 @@ export interface Gist {
   files: GistFile[];
 }
 
-export const nameForGist = (gist: Gist): string => (gist.description ? gist.description : gist.files[0].name);
+export enum GistScope {
+  Public = "public",
+  Private = "private",
+}
+
+interface CreateGistParams {
+  description: string | undefined;
+  filename: string;
+  text: string;
+  scope: GistScope;
+}
+
+interface CreateGistResult {
+  url: string;
+}
+
+export const createGist = async (params: CreateGistParams): Promise<CreateGistResult> => {
+  const accessToken = getGithubAccessToken();
+  const octokit = new Octokit({ auth: accessToken });
+
+  const response = await octokit.rest.gists.create({
+    description: params.description,
+    public: params.scope === GistScope.Public,
+    files: {
+      [params.filename]: { content: params.text },
+    },
+  });
+
+  const url = response.data.html_url as string;
+
+  return { url };
+};
+
+export const titleForGist = (gist: Gist): string => (gist.description ? gist.description : gist.files[0].name);
 
 export const withGists = (): [Gist[], boolean, () => void] => {
   const [isLoading, setIsLoading] = useState(true);
