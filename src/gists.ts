@@ -2,7 +2,7 @@ import { showToast, Toast } from "@raycast/api";
 import { useState, useEffect } from "react";
 import { Octokit } from "octokit";
 import { GraphQlQueryResponseData, GraphqlResponseError } from "@octokit/graphql";
-import { getGithubAccessToken } from './utils';
+import { getGithubAccessToken } from "./utils";
 
 interface GistFileLanguage {
   name: string;
@@ -11,7 +11,7 @@ interface GistFileLanguage {
 interface GistFile {
   id: string;
   name: string;
-  text: string,
+  text: string;
   language: GistFileLanguage;
 }
 
@@ -25,9 +25,9 @@ interface Gist {
   files: GistFile[];
 }
 
-export const nameForGist = (gist: Gist): string => gist.description ? gist.description : gist.files[0].name;
+export const nameForGist = (gist: Gist): string => (gist.description ? gist.description : gist.files[0].name);
 
-export const withGists = (): [Gist[], boolean, (() => void),] => {
+export const withGists = (): [Gist[], boolean, () => void] => {
   const [isLoading, setIsLoading] = useState(true);
   const [gists, setGists] = useState<Gist[]>([]);
 
@@ -37,7 +37,7 @@ export const withGists = (): [Gist[], boolean, (() => void),] => {
   const loadGists = async () => {
     const loadingToast = await showToast({
       style: Toast.Style.Animated,
-      title: 'Loading gists...'
+      title: "Loading gists...",
     });
 
     try {
@@ -67,7 +67,7 @@ export const withGists = (): [Gist[], boolean, (() => void),] => {
         }
       `);
 
-      const gists: Gist[] = response.viewer.gists.edges.map((edge: { node: Gist}) => edge.node);
+      const gists: Gist[] = response.viewer.gists.edges.map((edge: { node: Gist }) => edge.node);
 
       setGists(gists);
       await loadingToast.hide();
@@ -79,8 +79,8 @@ export const withGists = (): [Gist[], boolean, (() => void),] => {
       if (error instanceof GraphqlResponseError) {
         const errorToast = await showToast({
           style: Toast.Style.Failure,
-          title: 'Gists could not be loaded',
-          message: error.message
+          title: "Gists could not be loaded",
+          message: error.message,
         });
 
         setTimeout(() => {
@@ -89,8 +89,8 @@ export const withGists = (): [Gist[], boolean, (() => void),] => {
       } else {
         const errorToast = await showToast({
           style: Toast.Style.Failure,
-          title: 'Gists could not be loaded',
-          message: JSON.stringify(error)
+          title: "Gists could not be loaded",
+          message: JSON.stringify(error),
         });
 
         setTimeout(() => {
@@ -107,4 +107,4 @@ export const withGists = (): [Gist[], boolean, (() => void),] => {
   }, []);
 
   return [gists, isLoading, loadGists];
-}
+};

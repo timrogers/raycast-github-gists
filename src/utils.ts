@@ -9,4 +9,4 @@ const getPreferences = (): Preferences => getPreferenceValues<Preferences>();
 export const getGithubAccessToken = (): string => {
   const { githubAccessToken } = getPreferences();
   return githubAccessToken;
-}
+};

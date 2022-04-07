@@ -1,5 +1,5 @@
 import { ActionPanel, Detail, List, Action } from "@raycast/api";
-import { withGists, nameForGist } from './gists';
+import { withGists, nameForGist } from "./gists";
 
 interface GistFileLanguage {
   name: string;
@@ -8,7 +8,7 @@ interface GistFileLanguage {
 interface GistFile {
   id: string;
   name: string;
-  text: string,
+  text: string;
   language: GistFileLanguage;
 }
 
@@ -32,35 +32,31 @@ const GistFileList = (props: { gist: Gist }): JSX.Element => {
       ))}
     </List>
   );
-}
+};
 
-const GistFileDetail = (props: {file: GistFile, gist: Gist}): JSX.Element => {
+const GistFileDetail = (props: { file: GistFile; gist: Gist }): JSX.Element => {
   const gist = props.gist;
   const file = props.file;
 
   const markdown = `\`\`\`${file.language}\n${file.text}\n\`\`\``;
 
-  return (<Detail 
-            markdown={markdown}
-            navigationTitle={file.name}
-            actions={
-              <ActionPanel>
-                <Action.CopyToClipboard
-                  title="Copy Content to Clipboard"
-                  content={file.text}
-                />
-                <Action.CopyToClipboard
-                  title="Copy URL to Clipboard"
-                  content={gist.url}
-                />
-              </ActionPanel>
-            }
-          />)
-}
+  return (
+    <Detail
+      markdown={markdown}
+      navigationTitle={file.name}
+      actions={
+        <ActionPanel>
+          <Action.CopyToClipboard title="Copy Content to Clipboard" content={file.text} />
+          <Action.CopyToClipboard title="Copy URL to Clipboard" content={gist.url} />
+        </ActionPanel>
+      }
+    />
+  );
+};
 
-const GistFileListItem = (props: { gist: Gist, file: GistFile, fileIndex: number }): JSX.Element => {
+const GistFileListItem = (props: { gist: Gist; file: GistFile; fileIndex: number }): JSX.Element => {
   const gist = props.gist;
-  const file = props.file
+  const file = props.file;
   const fileIndex = props.fileIndex;
 
   return (
@@ -71,42 +67,34 @@ const GistFileListItem = (props: { gist: Gist, file: GistFile, fileIndex: number
       key={gist.id}
       actions={
         <ActionPanel>
-          <Action.Push
-            title="View File"
-            target={
-              <GistFileDetail gist={gist} file={file} />
-            }
-          />
-          <Action.CopyToClipboard
-            title="Copy Content to Clipboard"
-            content={file.text}
-          />
+          <Action.Push title="View File" target={<GistFileDetail gist={gist} file={file} />} />
+          <Action.CopyToClipboard title="Copy Content to Clipboard" content={file.text} />
           <Action.CopyToClipboard
             title="Copy URL to Clipboard"
             content={gist.url}
             shortcut={{
-              key: 'c',
-              modifiers: ['cmd', 'shift'],
+              key: "c",
+              modifiers: ["cmd", "shift"],
             }}
           />
           <Action.OpenInBrowser
             url={gist.url}
             title="Open in Browser"
             shortcut={{
-              key: 'o',
-              modifiers: ['cmd'],
+              key: "o",
+              modifiers: ["cmd"],
             }}
           />
         </ActionPanel>
       }
     />
-  )
-}
+  );
+};
 
-const GistListItem = (props: { gist: Gist, refreshGists: (() => void), }): JSX.Element => {
+const GistListItem = (props: { gist: Gist; refreshGists: () => void }): JSX.Element => {
   const gist = props.gist;
   const refreshGists = props.refreshGists;
-  
+
   if (gist.files.length == 1) {
     const [file] = gist.files;
 
@@ -117,46 +105,39 @@ const GistListItem = (props: { gist: Gist, refreshGists: (() => void), }): JSX.E
         title={nameForGist(gist)}
         key={gist.id}
         subtitle={gist.files.length > 1 ? `+${gist.files.length - 1} files` : undefined}
-        accessories={[{ text: gist.isPublic ? 'Public' : 'Private'}]}
+        accessories={[{ text: gist.isPublic ? "Public" : "Private" }]}
         actions={
           <ActionPanel>
-            <Action.Push
-              title="View File"
-              target={
-                <GistFileDetail gist={gist} file={file} />
-              }
-            />
-            <Action.CopyToClipboard
-              title="Copy Content to Clipboard"
-              content={file.text}
-            />
+            <Action.Push title="View File" target={<GistFileDetail gist={gist} file={file} />} />
+            <Action.CopyToClipboard title="Copy Content to Clipboard" content={file.text} />
             <Action.CopyToClipboard
               title="Copy URL to Clipboard"
               content={gist.url}
               shortcut={{
-                key: 'c',
-                modifiers: ['cmd', 'shift'],
+                key: "c",
+                modifiers: ["cmd", "shift"],
               }}
             />
             <Action.OpenInBrowser
               url={gist.url}
-              title="Open in Browser" 
+              title="Open in Browser"
               shortcut={{
-                key: 'o',
-                modifiers: ['cmd'],
+                key: "o",
+                modifiers: ["cmd"],
               }}
             />
             <Action
               title="Refresh"
               onAction={() => refreshGists}
               shortcut={{
-                key: 'r',
-                modifiers: ['cmd'],
+                key: "r",
+                modifiers: ["cmd"],
               }}
             />
           </ActionPanel>
         }
-    />)
+      />
+    );
   } else {
     const file = gist.files[0];
 
@@ -166,41 +147,34 @@ const GistListItem = (props: { gist: Gist, refreshGists: (() => void), }): JSX.E
         icon="list-icon.png"
         title={file.name}
         key={gist.id}
-        subtitle={`+${gist.files.length - 1} other ${gist.files.length > 2 ? 'files' : 'file'}`}
-        accessories={[{ text: gist.isPublic ? 'Public' : 'Private'}]}
+        subtitle={`+${gist.files.length - 1} other ${gist.files.length > 2 ? "files" : "file"}`}
+        accessories={[{ text: gist.isPublic ? "Public" : "Private" }]}
         actions={
           <ActionPanel>
-            <Action.Push
-              title="View Files"
-              target={
-                <GistFileList gist={gist} />
-              }
-            />
-            <Action.CopyToClipboard
-              title="Copy URL to Clipboard"
-              content={gist.url}
-            />
+            <Action.Push title="View Files" target={<GistFileList gist={gist} />} />
+            <Action.CopyToClipboard title="Copy URL to Clipboard" content={gist.url} />
             <Action.OpenInBrowser
               url={gist.url}
               title="Open in Browser"
               shortcut={{
-                key: 'o',
-                modifiers: ['cmd'],
+                key: "o",
+                modifiers: ["cmd"],
               }}
             />
             <Action
               title="Refresh"
               onAction={() => refreshGists}
               shortcut={{
-                key: 'r',
-                modifiers: ['cmd'],
+                key: "r",
+                modifiers: ["cmd"],
               }}
             />
           </ActionPanel>
         }
-    />)
-  };
-}
+      />
+    );
+  }
+};
 
 export default function Command() {
   const [gists, isLoading, refreshGists] = withGists();
@@ -213,7 +187,7 @@ export default function Command() {
           title="Create your first gist at https://gist.github.com"
         />
       ) : (
-        gists.map(gist => <GistListItem key={gist.id} gist={gist} refreshGists={refreshGists} />)
+        gists.map((gist) => <GistListItem key={gist.id} gist={gist} refreshGists={refreshGists} />)
       )}
     </List>
   );
