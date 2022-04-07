@@ -166,7 +166,7 @@ const GistListItem = (props: { gist: Gist, refreshGists: (() => void), }): JSX.E
         icon="list-icon.png"
         title={file.name}
         key={gist.id}
-        subtitle={`+${gist.files.length - 1} other files`}
+        subtitle={`+${gist.files.length - 1} other ${gist.files.length > 2 ? 'files' : 'file'}`}
         accessories={[{ text: gist.isPublic ? 'Public' : 'Private'}]}
         actions={
           <ActionPanel>
