@@ -8,14 +8,14 @@ interface GistFileLanguage {
   name: string;
 }
 
-interface GistFile {
+export interface GistFile {
   id: string;
   name: string;
   text: string;
   language: GistFileLanguage;
 }
 
-interface Gist {
+export interface Gist {
   createdAt: string;
   description: string;
   url: string;

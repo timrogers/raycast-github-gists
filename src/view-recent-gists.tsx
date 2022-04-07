@@ -1,27 +1,6 @@
 import { ActionPanel, Detail, List, Action } from "@raycast/api";
 import { withGists, nameForGist } from "./gists";
 
-interface GistFileLanguage {
-  name: string;
-}
-
-interface GistFile {
-  id: string;
-  name: string;
-  text: string;
-  language: GistFileLanguage;
-}
-
-interface Gist {
-  createdAt: string;
-  description: string;
-  url: string;
-  id: string;
-  isPublic: boolean;
-  name: string;
-  files: GistFile[];
-}
-
 const GistFileList = (props: { gist: Gist }): JSX.Element => {
   const gist = props.gist;
 
